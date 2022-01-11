@@ -701,7 +701,7 @@ public class FrostAPI
 	}
 	
 	/*
-	 * CONDITION TESTERS
+	 * CONDITION VALIDATORS
 	 */
 	
 	/**
@@ -772,8 +772,21 @@ public class FrostAPI
 		return false;
 	}
 	
+	/**
+	 * A method used to validate that an object is not null.
+	 *
+	 * @param object Targeted object
+	 * @since 1.0
+	 */
 	public void notNull(Object object) { notNull(object, null);}
 	
+	/**
+	 * A method used to validate that an object is not null.
+	 *
+	 * @param object Targeted object
+	 * @param message The exception message
+	 * @since 1.0
+	 */
 	public void notNull(Object object, String message)
 	{
 		if (object == null) {
