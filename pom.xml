@@ -7,13 +7,15 @@
     <groupId>com.frostdeveloper.api</groupId>
     <artifactId>FrostAPI</artifactId>
     <version>1.0.0</version>
-    <description>A Custom API For Minecraft Plugins</description>
+    <name>FrostAPI</name>
+    <description>A Custom API For Java Projects</description>
+    <url>https://www.frostdeveloper.com/project/frostapi.html</url>
     <packaging>jar</packaging>
 
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
 
@@ -29,7 +31,7 @@
     <scm>
         <connection>scm:git:git://github.com/OMGitzFROST/FrostAPI.git</connection>
         <developerConnection>scm:git:ssh://github.com:OMGitzFROST/FrostAPI.git</developerConnection>
-        <url>https://github.com/OMGitzFROST/FrostAPI/tree/master</url>
+        <url>http://github.com/OMGitzFROST/FrostAPI/tree/master</url>
     </scm>
 
     <distributionManagement>
@@ -49,12 +51,6 @@
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -62,7 +58,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -76,7 +72,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
@@ -109,6 +105,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+                </configuration>
             </plugin>
 
             <plugin>
