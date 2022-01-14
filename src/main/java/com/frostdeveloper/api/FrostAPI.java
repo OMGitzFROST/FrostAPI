@@ -1,9 +1,9 @@
 package com.frostdeveloper.api;
 
 import com.frostdeveloper.api.exception.FailedMethodException;
+import com.frostdeveloper.api.handler.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -134,6 +137,16 @@ public class FrostAPI
 	public File toFile(String path)             { return toFile(null, path);                              }
 	
 	/**
+	 * A method used to create a file object from a path.
+	 *
+	 * @param path Target path
+	 * @return File object from a string path
+	 *
+	 * @since 1.0
+	 */
+	public File toFile(Path path)               { return toFile(null, toString(path));                    }
+	
+	/**
 	 * A method used to create a file object from a string path. This method also allows
 	 * you to define the starting point of the path, from a parent directory
 	 *
@@ -225,55 +238,9 @@ public class FrostAPI
 		throw new IllegalArgumentException("Failed to convert string to locale, is it a valid locale?");
 	}
 	
-	/* CREATE FILE ARRAYS */
-	
-	/**
-	 * A method used to create a file array with defined file objects in the parameters field.
-	 *
-	 * @param files Targeted files
-	 * @return A new File[]
-	 * @since 1.0
+	/*
+	 * EXTENSION GETTERS
 	 */
-	public File[] toFileArray(File @NotNull ... files)
-	{
-		return new ArrayList<>(Arrays.asList(files)).toArray(new File[0]);
-	}
-	
-	/**
-	 * A method used to create a file array with defined String paths in the parameters field.
-	 *
-	 * @param files Targeted file paths
-	 * @return A new File[]
-	 * @since 1.0
-	 */
-	public File[] toFileArray(String @NotNull ... files)
-	{
-		ArrayList<File> array = new ArrayList<>();
-		
-		for (String current : files) {
-			array.add(toFile(current));
-		}
-		return array.toArray(new File[0]);
-	}
-	
-	/**
-	 * A method used to create a file array with defined paths in the parameters field.
-	 *
-	 * @param files Targeted file paths
-	 * @return A new File[]
-	 * @since 1.0
-	 */
-	public File[] toFileArray(Path @NotNull ... files)
-	{
-		ArrayList<File> array = new ArrayList<>();
-		
-		for (Path path : files) {
-			array.add(path.toFile());
-		}
-		return array.toArray(new File[0]);
-	}
-	
-	/* EXTENSION GETTERS */
 	
 	/**
 	 * A method used to get the file extension from a string representation of a file path
@@ -364,17 +331,35 @@ public class FrostAPI
 	 */
 	
 	/**
+	 * A method used to get the attributes to a file.
+	 *
+	 * @param target Target file
+	 * @return File attributes
+	 * @since 1.0
+	 */
+	public BasicFileAttributes getFileAttribute(@NotNull File target)
+	{
+		Validate.notNull(target, "Please create the file first.");
+		
+		try {
+			return Files.readAttributes(target.toPath(), BasicFileAttributes.class);
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * This method is used to get the date a file was created.
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @throws IOException Thrown if the file is null
 	 * @since 1.0
 	 */
-	public @NotNull String getCreatedDate(@NotNull File target) throws IOException
+	public String getCreatedDate(@NotNull File target)
 	{
-		BasicFileAttributes attrs = Files.readAttributes(target.toPath(), BasicFileAttributes.class);
-		FileTime time = attrs.creationTime();
+		FileTime time = getFileAttribute(target).creationTime();
 		return format(new Date(time.toMillis()));
 	}
 	
@@ -383,13 +368,11 @@ public class FrostAPI
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @throws IOException Thrown if the file is null
 	 * @since 1.0
 	 */
-	public String getLastModified(@NotNull File target) throws IOException
+	public String getLastModified(@NotNull File target)
 	{
-		BasicFileAttributes attrs = Files.readAttributes(target.toPath(), BasicFileAttributes.class);
-		FileTime time = attrs.lastModifiedTime();
+		FileTime time = getFileAttribute(target).lastModifiedTime();
 		return format(new Date(time.toMillis()));
 	}
 	
@@ -398,17 +381,17 @@ public class FrostAPI
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @throws IOException Thrown if the file is null
 	 * @since 1.0
 	 */
-	public String getLastAccessed(@NotNull File target) throws IOException
+	public String getLastAccessed(@NotNull File target)
 	{
-		BasicFileAttributes attrs = Files.readAttributes(target.toPath(), BasicFileAttributes.class);
-		FileTime time = attrs.lastAccessTime();
+		FileTime time = getFileAttribute(target).lastAccessTime();
 		return format(new Date(time.toMillis()));
 	}
 	
-	/* INDEX VERIFIERS */
+	/*
+	 * INDEX VERIFIERS
+	 */
 	
 	/**
 	 * A method used to return whether an index is a file or not.
@@ -464,7 +447,9 @@ public class FrostAPI
 	 */
 	public boolean isDirectory(@NotNull Path path)   { return path.toFile().isDirectory();                        }
 	
-	/* RENAMING FILES */
+	/*
+	 * RENAMING FILES
+	 */
 	
 	/**
 	 * A method used to rename the parent directory of an index.
@@ -484,8 +469,8 @@ public class FrostAPI
 	 */
 	public void renameIndex(File target, String name)
 	{
-		notNull(target, "The target file cannot be null!");
-		notNull(name, "The new file name cannot be null");
+		Validate.notNull(target, "The target file cannot be null!");
+		Validate.notNull(name, "The new file name cannot be null");
 		
 		if (!target.exists()) {
 			return;
@@ -508,7 +493,29 @@ public class FrostAPI
 	 * @return Current Time
 	 * @since 1.0
 	 */
-	public @NotNull Date getTimeNow() { return new Date(System.currentTimeMillis());              }
+	public Date getToday() { return new Date(); }
+	
+	/**
+	 * A method used to return the current date and time as a string
+	 *
+	 * @return A string representing the current date.
+	 * @since 1.0
+	 */
+	public String getTodayAsString() { return toString(getToday()); }
+	
+	/**
+	 * A method used to return the current date and time as a string
+	 *
+	 * @param pattern Date pattern
+	 *
+	 * @return A string representing the current date.
+	 * @since 1.0
+	 */
+	public String getTodayAsString(String pattern)
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+		return formatter.format(getToday());
+	}
 	
 	/**
 	 * A method used in a runnable. It's used to return the amount of time required to complete the delay in seconds
@@ -698,104 +705,5 @@ public class FrostAPI
 	public @NotNull List<String> stripColor(@NotNull List<String> list)
 	{
 		return list.stream().map(this::stripColor).collect(Collectors.toList());
-	}
-	
-	/*
-	 * CONDITION VALIDATORS
-	 */
-	
-	/**
-	 * A method used to test the conditions and will return true if all conditions are true.
-	 *
-	 * @param conditions Tested conditions
-	 * @return True if all conditions are true.
-	 * @since 1.0
-	 */
-	public boolean allTrue(boolean @NotNull ... conditions)
-	{
-		for (boolean condition : conditions) {
-			if (!condition) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * A method used to test the conditions and will return true if all conditions are false.
-	 *
-	 * @param conditions Tested conditions
-	 * @return True if all conditions are false.
-	 * @since 1.0
-	 */
-	public boolean allFalse(boolean @NotNull ... conditions)
-	{
-		for (boolean condition : conditions) {
-			if (condition) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * A method used to test the conditions and will return true if any of the conditions are true.
-	 *
-	 * @param conditions Tested conditions
-	 * @return True if any condition is true.
-	 * @since 1.0
-	 */
-	public boolean anyTrue(boolean @NotNull ... conditions)
-	{
-		for (boolean condition : conditions) {
-			if (condition) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * A method used to test the conditions and will return true if any of the conditions are false.
-	 *
-	 * @param conditions Tested conditions
-	 * @return True if any condition is false.
-	 * @since 1.0
-	 */
-	public boolean anyFalse(boolean @NotNull ... conditions)
-	{
-		for (boolean condition : conditions) {
-			if (!condition) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * A method used to validate that an object is not null.
-	 *
-	 * @param object Targeted object
-	 * @since 1.0
-	 */
-	public void notNull(Object object) { notNull(object, null);}
-	
-	/**
-	 * A method used to validate that an object is not null.
-	 *
-	 * @param object Targeted object
-	 * @param message The exception message
-	 * @since 1.0
-	 */
-	public void notNull(Object object, String message)
-	{
-		if (object == null) {
-			if (message == null) {
-				throw new IllegalArgumentException();
-			}
-			else {
-				throw new IllegalArgumentException(message);
-			}
-		}
 	}
 }
