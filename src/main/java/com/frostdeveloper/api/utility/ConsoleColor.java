@@ -1,5 +1,7 @@
 package com.frostdeveloper.api.utility;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A class used to create methods to get instance of console colors.
  *
@@ -8,10 +10,10 @@ package com.frostdeveloper.api.utility;
  */
 public enum ConsoleColor {
 	
-	//Color end string, color reset
+	// COLOR END STRING, COLOR RESET
 	RESET("\033[0m"),                           // RESET
 	
-	// Regular Colors. Normal color, no bold, background color etc.
+	// REGULAR COLORS. NORMAL COLOR, NO BOLD, BACKGROUND COLOR ETC.
 	BLACK("\033[0;30m"),                        // BLACK
 	RED("\033[0;31m"),                          // RED
 	GREEN("\033[0;32m"),                        // GREEN
@@ -21,7 +23,7 @@ public enum ConsoleColor {
 	CYAN("\033[0;36m"),                         // CYAN
 	WHITE("\033[0;37m"),                        // WHITE
 	
-	// Bold
+	// BOLD
 	BLACK_BOLD("\033[1;30m"),                   // BLACK
 	RED_BOLD("\033[1;31m"),                     // RED
 	GREEN_BOLD("\033[1;32m"),                   // GREEN
@@ -31,7 +33,7 @@ public enum ConsoleColor {
 	CYAN_BOLD("\033[1;36m"),                    // CYAN
 	WHITE_BOLD("\033[1;37m"),                   // WHITE
 	
-	// Underline
+	// UNDERLINE
 	BLACK_UNDERLINED("\033[4;30m"),             // BLACK
 	RED_UNDERLINED("\033[4;31m"),               // RED
 	GREEN_UNDERLINED("\033[4;32m"),             // GREEN
@@ -41,7 +43,7 @@ public enum ConsoleColor {
 	CYAN_UNDERLINED("\033[4;36m"),              // CYAN
 	WHITE_UNDERLINED("\033[4;37m"),             // WHITE
 	
-	// Background
+	// BACKGROUND
 	BLACK_BACKGROUND("\033[40m"),               // BLACK
 	RED_BACKGROUND("\033[41m"),                 // RED
 	GREEN_BACKGROUND("\033[42m"),               // GREEN
@@ -51,7 +53,7 @@ public enum ConsoleColor {
 	CYAN_BACKGROUND("\033[46m"),                // CYAN
 	WHITE_BACKGROUND("\033[47m"),               // WHITE
 	
-	// High Intensity
+	// HIGH INTENSITY
 	BLACK_BRIGHT("\033[0;90m"),                 // BLACK
 	RED_BRIGHT("\033[0;91m"),                   // RED
 	GREEN_BRIGHT("\033[0;92m"),                 // GREEN
@@ -61,7 +63,7 @@ public enum ConsoleColor {
 	CYAN_BRIGHT("\033[0;96m"),                  // CYAN
 	WHITE_BRIGHT("\033[0;97m"),                 // WHITE
 	
-	// Bold High Intensity
+	// BOLD HIGH INTENSITY
 	BLACK_BOLD_BRIGHT("\033[1;90m"),            // BLACK
 	RED_BOLD_BRIGHT("\033[1;91m"),              // RED
 	GREEN_BOLD_BRIGHT("\033[1;92m"),            // GREEN
@@ -71,7 +73,7 @@ public enum ConsoleColor {
 	CYAN_BOLD_BRIGHT("\033[1;96m"),             // CYAN
 	WHITE_BOLD_BRIGHT("\033[1;97m"),            // WHITE
 	
-	// High Intensity backgrounds
+	// HIGH INTENSITY BACKGROUNDS
 	BLACK_BACKGROUND_BRIGHT("\033[0;100m"),     // BLACK
 	RED_BACKGROUND_BRIGHT("\033[0;101m"),       // RED
 	GREEN_BACKGROUND_BRIGHT("\033[0;102m"),     // GREEN
@@ -90,7 +92,7 @@ public enum ConsoleColor {
 	 * @param code Color code
 	 * @since 1.0
 	 */
-	ConsoleColor(String code) { this.code = code; }
+	ConsoleColor(String code)                                                { this.code = code;             }
 	
 	/**
 	 * A method used to get the color code for a console color
@@ -99,5 +101,34 @@ public enum ConsoleColor {
 	 * @since 1.0
 	 */
 	@Override
-	public String toString() { return code;       }
+	public String toString()                                                 { return code;                  }
+	
+	/**
+	 * A method used to add a color to a console message, this method will always automatically include
+	 * a reset at the end of the string.
+	 *
+	 * @param color Target Color
+	 * @param input Target input
+	 * @return Color formatted string
+	 * @since 1.1.0
+	 */
+	public static @NotNull String add(ConsoleColor color, String input) { return color + input + RESET; }
+	
+	/**
+	 * A method used to remove an enum color from an input, if not color was found this method
+	 * will return the unchanged original string.
+	 *
+	 * @param input Target input
+	 * @return Stripped output
+	 * @since 1.1.0
+	 */
+	public static @NotNull String remove(String input)
+	{
+		for (ConsoleColor current : ConsoleColor.values()) {
+			if (input.contains(current.toString())) {
+				input = input.replace(current.toString(), "");
+			}
+		}
+		return input;
+	}
 }
