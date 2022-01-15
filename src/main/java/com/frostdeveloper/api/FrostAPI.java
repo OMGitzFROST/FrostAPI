@@ -216,27 +216,32 @@ public class FrostAPI
 	 */
 	public Locale toLocale(@NotNull String target)
 	{
-		String correction1 = target.replaceAll("-", "_");
-		String[] split = correction1.split("_");
-		
-		Locale locale = null;
-		
-		if (split.length == 1) {
-			locale = new Locale(split[0].toLowerCase());
-		}
-		if (split.length == 2) {
-			locale = new Locale(split[0].toLowerCase(), split[1].toUpperCase());
-		}
-		if (split.length == 3) {
-			locale = new Locale(split[0].toLowerCase(), split[1].toUpperCase(), split[2].toUpperCase());
-		}
-		
-		for (Locale current : Locale.getAvailableLocales()) {
-			if (current.equals(locale)) {
-				return locale;
+		try {
+			String correction1 = target.replaceAll("-", "_");
+			String[] split = correction1.split("_");
+			
+			Locale locale = null;
+			
+			if (split.length == 1) {
+				locale = new Locale(split[0].toLowerCase());
 			}
+			if (split.length == 2) {
+				locale = new Locale(split[0].toLowerCase(), split[1].toUpperCase());
+			}
+			if (split.length == 3) {
+				locale = new Locale(split[0].toLowerCase(), split[1].toUpperCase(), split[2].toUpperCase());
+			}
+			
+			for (Locale current : Locale.getAvailableLocales()) {
+				if (current.equals(locale)) {
+					return locale;
+				}
+			}
+			return null;
 		}
-		throw new IllegalArgumentException("Failed to convert string to locale, is it a valid locale?");
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Failed to convert string to locale, is it a valid locale?", ex);
+		}
 	}
 	
 	/*
@@ -738,7 +743,6 @@ public class FrostAPI
 		
 		return input;
 	}
-	
 	
 	/**
 	 * A method used to remove color codes from any given string list this method
