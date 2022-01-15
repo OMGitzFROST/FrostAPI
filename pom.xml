@@ -6,7 +6,7 @@
 
     <groupId>com.frostdeveloper.api</groupId>
     <artifactId>FrostAPI</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>FrostAPI</name>
     <description>A Custom API For Java Projects</description>
     <url>https://www.frostdeveloper.com/project/frostapi.html</url>
