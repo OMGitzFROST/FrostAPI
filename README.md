@@ -6,13 +6,13 @@
 
 <p align="center">
   <a href="https://github.com/OMGitzFROST/FrostAPI/blob/master/LICENSE">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/OMGitzFROST/FrostAPI?style=flat-square&logo=appveyor">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/OMGitzFROST/FrostAPI?style=flat-square">
   </a>
   <a href="https://github.com/OMGitzFROST/FrostAPI/releases/latest">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/OMGitzFROST/FrostAPI?style=flat-square&logo=appveyor">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/OMGitzFROST/FrostAPI?style=flat-square">
   </a>
   <a href="https://github.com/sponsors/OMGitzFROST">
-    <img src="https://img.shields.io/badge/$-donate-brown.svg?style=flat-square&logo=appveyor" alt="Donate Pill">
+    <img src="https://img.shields.io/badge/$-donate-brown.svg?style=flat-square" alt="Donate Pill">
   </a>
 </p>
 
@@ -45,6 +45,6 @@ page. If you can't make a donation, don't worry! There are lots of other ways to
 ---
 
 <h6 align="center">
-  | GitHub - <a href="https://github.com/omgitzfrost">@omgitzfrost</a>  · 
-  | Twitter - <a href="https://twitter.com/omgitzfrost">@omgitzfrost</a> |
+<img alt="GitHub followers" src="https://img.shields.io/github/followers/OMGitzFROST?style=social">
+<img alt="Twitter URL" src="https://img.shields.io/twitter/url?label=OMGitzFROST&style=social&url=https%3A%2F%2Ftwitter.com%2Fomgitzfrost">
 </h6>
