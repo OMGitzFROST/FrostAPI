@@ -2,6 +2,7 @@ package com.frostdeveloper.api;
 
 import com.frostdeveloper.api.exception.FailedMethodException;
 import com.frostdeveloper.api.handler.Validate;
+import com.frostdeveloper.api.utility.ConsoleColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -483,6 +484,31 @@ public class FrostAPI
 		}
 	}
 	
+	/**
+	 * A method used to relocate an index to a new location
+	 *
+	 * @param target Target index
+	 * @param location Desired Location
+	 * @since 1.1.0
+	 */
+	public void relocateIndex(File target, File location)
+	{
+		Validate.notNull(target, "The target file cannot be null!");
+		Validate.notNull(location, "The new file name cannot be null");
+		
+		if (!target.exists()) {
+			return;
+		}
+		
+		createParent(location);
+		
+		if (target != location && !target.renameTo(location)) {
+			if (!target.exists()) {
+				throw new FailedMethodException("Failed to rename file");
+			}
+		}
+	}
+	
 	/*
 	 * TIME METHODS
 	 */
@@ -655,6 +681,21 @@ public class FrostAPI
 		return format(input, param);
 	}
 	
+	/**
+	 * A method used to format our console colors into the specified input, this method includes
+	 * the ability to add parameters by default.
+	 *
+	 * @param color Target color
+	 * @param input Target message
+	 * @param param Optional params
+	 * @return Formatted message
+	 * @since 1.1.0
+	 */
+	public String format(ConsoleColor color, String input, Object... param)
+	{
+		return format(ConsoleColor.add(color, input), param);
+	}
+	
 	/*
 	 * STRIP COLOR
 	 */
@@ -691,8 +732,13 @@ public class FrostAPI
 			
 			input = input.replace("&r", "");
 		}
+		
+		// REMOVE CONSOLE COLOR
+		input = ConsoleColor.remove(input);
+		
 		return input;
 	}
+	
 	
 	/**
 	 * A method used to remove color codes from any given string list this method
@@ -705,5 +751,65 @@ public class FrostAPI
 	public @NotNull List<String> stripColor(@NotNull List<String> list)
 	{
 		return list.stream().map(this::stripColor).collect(Collectors.toList());
+	}
+	
+	/**
+	 * A method used to add a string to a list if a condition is met
+	 *
+	 * @param list Target list
+	 * @param value Target value
+	 * @param condition Required condition
+	 * @since 1.1.0
+	 */
+	public void addToList(List<String> list, String value, boolean condition)
+	{
+		if (condition) {
+			list.add(value);
+		}
+	}
+	
+	/**
+	 * A method used to add an object to a list if a condition is met
+	 *
+	 * @param list Target list
+	 * @param value Target value
+	 * @param condition Required condition
+	 * @since 1.1.0
+	 */
+	public void addToList(List<Object> list, Object value, boolean condition)
+	{
+		if (condition) {
+			list.add(value);
+		}
+	}
+	
+	/**
+	 * A method used to add a boolean to a list if a condition is met
+	 *
+	 * @param list Target list
+	 * @param value Target value
+	 * @param condition Required condition
+	 * @since 1.1.0
+	 */
+	public void addToList(List<Boolean> list, Boolean value, boolean condition)
+	{
+		if (condition) {
+			list.add(value);
+		}
+	}
+	
+	/**
+	 * A method used to add an integer to a list if a condition is met
+	 *
+	 * @param list Target list
+	 * @param value Target value
+	 * @param condition Required condition
+	 * @since 1.1.0
+	 */
+	public void addToList(List<Integer> list, Integer value, boolean condition)
+	{
+		if (condition) {
+			list.add(value);
+		}
 	}
 }
