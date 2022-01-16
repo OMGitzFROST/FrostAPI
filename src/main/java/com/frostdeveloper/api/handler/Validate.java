@@ -2,6 +2,7 @@ package com.frostdeveloper.api.handler;
 
 import com.frostdeveloper.api.FrostAPI;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Test;
 
 /**
  * A class used to house a variety of method that will validate objects throughout any project.
@@ -71,7 +72,6 @@ public class Validate
 		}
 	}
 	
-	
 	/**
 	 * A method used to validate that an object is equal to false, if not this method will throw
 	 * an exception with the specified message.
@@ -80,7 +80,7 @@ public class Validate
 	 *
 	 * @param object Targeted object
 	 * @param message The exception message
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void isFalse(Object object, String message)
 	{
@@ -96,7 +96,7 @@ public class Validate
 	 * @throws IllegalArgumentException Thrown if tbe object is not false.
 	 *
 	 * @param object Targeted object
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void isFalse(Object object)
 	{

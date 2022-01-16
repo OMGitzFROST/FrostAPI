@@ -5,22 +5,20 @@ import com.frostdeveloper.api.handler.Validate;
 import com.frostdeveloper.api.utility.ConsoleColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Test;
+import sun.misc.IOUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +26,7 @@ import java.util.stream.Collectors;
  * is designed to make development easier for all current and future projects.
  *
  * @author OMGitzFROST
- * @version 1.0
+ * @version 1.0.0
  */
 public class FrostAPI
 {
@@ -36,7 +34,7 @@ public class FrostAPI
 	 * A method used to return an instance of this api class
 	 *
 	 * @return API instance
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Contract (value = " -> new", pure = true)
 	public static @NotNull FrostAPI getInstance() { return new FrostAPI();                                        }
@@ -60,22 +58,27 @@ public class FrostAPI
 	 *
 	 * @throws  NullPointerException If {@code name} is {@code null}
 	 *
-	 * @since  1.0
+	 * @since  1.0.0
 	 */
-	public InputStream getResource(String name) { return getClass().getClassLoader().getResourceAsStream(name);   }
+	public InputStream getResource(String name)
+	{
+		Validate.notNull(getClass().getClassLoader().getResourceAsStream(name));
+		return getClass().getClassLoader().getResourceAsStream(name);
+	}
 	
 	/**
 	 * A method used to return the url for a resource located in this .jar's resources file.
 	 *
 	 * @param name Target resource file name
-	 *
 	 * @return Resource URL
-	 *
 	 * @throws  NullPointerException If {@code name} is {@code null}
-	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public URL getResourceURL(String name)      { return getClass().getClassLoader().getResource(name);           }
+	public URL getResourceURL(String name)
+	{
+		Validate.notNull(getClass().getClassLoader().getResource(name));
+		return getClass().getClassLoader().getResource(name);
+	}
 	
 	/**
 	 * A method used to save a resource from our resource file to a defined location.
@@ -83,28 +86,47 @@ public class FrostAPI
 	 * @param location Target location
 	 * @param name Resource name
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public void saveResource(@NotNull File location, String name) { saveResource(location, name, false); }
+	public void saveResource(File location, String name) { saveResource(location, name, false);         }
 	
 	/**
 	 * A method used to save a resource from our resource file to a defined location. This method also
 	 * allows you to define whether we should replace an existing copy of this resource.
+	 * <br><br/>
+	 * The location parameter can take a directory or a file as a valid path, if a directory is
+	 * provided, this method will take that path and create a new path to include your resource in it,
+	 * <br><br/>
+	 * For example: If your resource is named, example.txt and your location directory path is
+	 * "path/to/directory" this method will turn
 	 *
 	 * @param location Target location
 	 * @param name Resource name
 	 * @param replace Whether an existing resource should be replaced.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public void saveResource(@NotNull File location, String name, boolean replace)
+	public void saveResource(File location, String name, boolean replace)
 	{
-		try {
-			if (replace) {
-				Files.copy(getResource(name), location.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			}
-			else {
-				Files.copy(getResource(name), location.toPath());
+		Validate.notNull(location, "Please specify a location, can be a directory or file");
+		Validate.notNull(name, "Please specify a resource name, please make sure it exists.");
+		
+		if (isDirectory(location)) {
+			location = toFile(location + File.separator + name);
+		}
+		
+		if (!replace && location.exists()) {
+			return;
+		}
+		
+		if (replace && location.exists() && !location.delete()) {
+			throw new FailedMethodException("Failed to delete our existing ({0}) file", location.getName());
+		}
+		
+		try (InputStream input = getResource(name); OutputStream output = new FileOutputStream(location)) {
+			byte[] buf = new byte[8192]; int length;
+			while ((length = input.read(buf)) > 0) {
+				output.write(buf, 0, length);
 			}
 		}
 		catch (IOException ex) {
@@ -116,7 +138,7 @@ public class FrostAPI
 	 * A method used to create all parent directories for a targeted file.
 	 *
 	 * @param target The file path
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void createParent(@NotNull File target)
 	{
@@ -133,7 +155,7 @@ public class FrostAPI
 	 * @param path Target path
 	 * @return File object from a string path
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public File toFile(String path)             { return toFile(null, path);                              }
 	
@@ -143,7 +165,7 @@ public class FrostAPI
 	 * @param path Target path
 	 * @return File object from a string path
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public File toFile(Path path)               { return toFile(null, toString(path));                    }
 	
@@ -155,7 +177,7 @@ public class FrostAPI
 	 * @param path Target path
 	 * @return File object from a string path
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public File toFile(File parent, @NotNull String path)
 	{
@@ -174,7 +196,7 @@ public class FrostAPI
 	 *
 	 * @param target Target object
 	 * @return An object as a string
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String toString(Object target)   { return String.valueOf(target);                                      }
 	
@@ -183,7 +205,7 @@ public class FrostAPI
 	 *
 	 * @param target Target object
 	 * @return An object as a boolean
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean toBoolean(Object target) { return Boolean.parseBoolean(toString(target));                      }
 	
@@ -192,7 +214,7 @@ public class FrostAPI
 	 *
 	 * @param target Target object
 	 * @return An object as an integer
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toInteger(Object target)     { return Integer.parseInt(toString(target));                          }
 	
@@ -201,7 +223,7 @@ public class FrostAPI
 	 *
 	 * @param target Target object
 	 * @return An object as a double
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public double toDouble(Object target)   { return Double.parseDouble(toString(target));                        }
 	
@@ -212,7 +234,7 @@ public class FrostAPI
 	 *
 	 * @param target Targeted input
 	 * @return A valid locale type
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Locale toLocale(@NotNull String target)
 	{
@@ -253,7 +275,7 @@ public class FrostAPI
 	 *
 	 * @param path String representation of file path
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(String path)     { return getExtension(path, false);                      }
 	
@@ -262,7 +284,7 @@ public class FrostAPI
 	 *
 	 * @param target File path
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(File target)     { return getExtension(target, false);                    }
 	
@@ -271,7 +293,7 @@ public class FrostAPI
 	 *
 	 * @param path File path
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(Path path)       { return getExtension(path, false);                      }
 	
@@ -282,7 +304,7 @@ public class FrostAPI
 	 * @param path String representation of file path
 	 * @param dotless Whether our return value should contain a '.' character
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(String path, boolean dotless)
 	{
@@ -300,7 +322,7 @@ public class FrostAPI
 	 * @param target File path
 	 * @param dotless Whether our return value should contain a '.' character
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(@NotNull File target, boolean dotless)
 	{
@@ -320,7 +342,7 @@ public class FrostAPI
 	 * @param path File path
 	 * @param dotless Whether our return value should contain a '.' character
 	 * @return File extension
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getExtension(@NotNull Path path, boolean dotless)
 	{
@@ -341,7 +363,7 @@ public class FrostAPI
 	 *
 	 * @param target Target file
 	 * @return File attributes
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public BasicFileAttributes getFileAttribute(@NotNull File target)
 	{
@@ -361,7 +383,7 @@ public class FrostAPI
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getCreatedDate(@NotNull File target)
 	{
@@ -374,7 +396,7 @@ public class FrostAPI
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getLastModified(@NotNull File target)
 	{
@@ -387,7 +409,7 @@ public class FrostAPI
 	 *
 	 * @param target The target file
 	 * @return The creation date of a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getLastAccessed(@NotNull File target)
 	{
@@ -404,7 +426,7 @@ public class FrostAPI
 	 *
 	 * @param target Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isFile(@NotNull File target)      { return target.isFile();                                    }
 	
@@ -413,7 +435,7 @@ public class FrostAPI
 	 *
 	 * @param path Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isFile(String path)               { return toFile(path).isFile();                              }
 	
@@ -422,7 +444,7 @@ public class FrostAPI
 	 *
 	 * @param path Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isFile(@NotNull Path path)        { return path.toFile().isFile();                             }
 	
@@ -431,7 +453,7 @@ public class FrostAPI
 	 *
 	 * @param target Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isDirectory(@NotNull File target) { return target.isDirectory();                               }
 	
@@ -440,7 +462,7 @@ public class FrostAPI
 	 *
 	 * @param path Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isDirectory(String path)          { return toFile(path).isDirectory();                         }
 	
@@ -449,7 +471,7 @@ public class FrostAPI
 	 *
 	 * @param path Targeted index
 	 * @return Whether our index is a file.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isDirectory(@NotNull Path path)   { return path.toFile().isDirectory();                        }
 	
@@ -462,7 +484,7 @@ public class FrostAPI
 	 *
 	 * @param target Target file
 	 * @param name New parent name
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void renameParent(@NotNull File target, String name) { renameIndex(target.getParentFile(), name);      }
 	
@@ -471,7 +493,7 @@ public class FrostAPI
 	 *
 	 * @param target Target file
 	 * @param name New name
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void renameIndex(File target, String name)
 	{
@@ -522,7 +544,7 @@ public class FrostAPI
 	 * A method used to return the current time
 	 *
 	 * @return Current Time
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Date getToday() { return new Date(); }
 	
@@ -530,7 +552,7 @@ public class FrostAPI
 	 * A method used to return the current date and time as a string
 	 *
 	 * @return A string representing the current date.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getTodayAsString() { return toString(getToday()); }
 	
@@ -540,7 +562,7 @@ public class FrostAPI
 	 * @param pattern Date pattern
 	 *
 	 * @return A string representing the current date.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getTodayAsString(String pattern)
 	{
@@ -553,7 +575,7 @@ public class FrostAPI
 	 *
 	 * @param amount Amount of seconds.
 	 * @return Delay in seconds
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toSecond(Object amount) { return toInteger(amount);                                                }
 	
@@ -562,7 +584,7 @@ public class FrostAPI
 	 *
 	 * @param amount Amount of minutes.
 	 * @return Delay in minutes
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toMinute(Object amount) { return toSecond(60) * toInteger(amount);                        }
 	
@@ -571,7 +593,7 @@ public class FrostAPI
 	 *
 	 * @param amount Amount of hours.
 	 * @return Delay in hours
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toHour(Object amount)   { return toMinute(60) * toInteger(amount);                        }
 	
@@ -580,7 +602,7 @@ public class FrostAPI
 	 *
 	 * @param amount Amount of days.
 	 * @return Delay in days
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toDay(Object amount)    { return toHour(24) * toInteger(amount);                          }
 	
@@ -589,7 +611,7 @@ public class FrostAPI
 	 *
 	 * @param input String input
 	 * @return Requested duration
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public int toTime(String input)
 	{
@@ -626,6 +648,156 @@ public class FrostAPI
 		throw new IllegalArgumentException("Invalid time: " + input);
 	}
 	
+	/**
+	 * A method used to convert a string to a valid date.
+	 * 
+	 * @apiNote This method used be used as to create a timestamp of a string but cannot be formatted
+	 * when using as a date object. In-order to format this date, you muse use the {@link #format(String, Date)}.
+	 * Keep in mind this will return as a string and not a date.
+	 *
+	 * @param input String representation of a date.
+	 * @return A date object.
+	 * @since 1.1.0
+	 */
+	public Date toDate(String input) { return new Date(input); }
+	
+	/*
+	 * BOOLEAN TESTERS
+	 */
+	
+	/**
+	 * A method used to test whether a date is before a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is before the compared date.
+	 * @since 1.1.0
+	 */
+	public boolean isBeforeDate(String target, String comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return toDate(target).before(toDate(comparedTo));
+	}
+	
+	/**
+	 * A method used to test whether a date is before a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is before the compared date.
+	 * @since 1.1.0
+	 */
+	public boolean isBeforeDate(@NotNull Date target, Date comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return target.before(comparedTo);
+	}
+	
+	/**
+	 * A method used to test whether a date is after a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is after the compared date.
+	 * @since 1.1.0
+	 */
+	public boolean isAfterDate(String target, String comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return toDate(target).after(toDate(comparedTo));
+	}
+	
+	/**
+	 * A method used to test whether a date is after a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is after the compared date.
+	 * @since 1.1.0
+	 */
+	public boolean isAfterDate(@NotNull Date target, Date comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return target.after(comparedTo);
+	}
+	
+	
+	/**
+	 * A method used to test the conditions and will return true if all conditions are true.
+	 *
+	 * @param conditions Tested conditions
+	 * @return True if all conditions are true.
+	 * @since 1.0.0
+	 */
+	public static boolean allTrue(boolean @NotNull ... conditions)
+	{
+		for (boolean condition : conditions) {
+			if (!condition) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * A method used to test the conditions and will return true if all conditions are false.
+	 *
+	 * @param conditions Tested conditions
+	 * @return True if all conditions are false.
+	 * @since 1.0.0
+	 */
+	public static boolean allFalse(boolean @NotNull ... conditions)
+	{
+		for (boolean condition : conditions) {
+			if (condition) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * A method used to test the conditions and will return true if any of the conditions are true.
+	 *
+	 * @param conditions Tested conditions
+	 * @return True if any condition is true.
+	 * @since 1.0.0
+	 */
+	public static boolean anyTrue(boolean @NotNull ... conditions)
+	{
+		for (boolean condition : conditions) {
+			if (condition) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * A method used to test the conditions and will return true if any of the conditions are false.
+	 *
+	 * @param conditions Tested conditions
+	 * @return True if any condition is false.
+	 * @since 1.0.0
+	 */
+	public static boolean anyFalse(boolean @NotNull ... conditions)
+	{
+		for (boolean condition : conditions) {
+			if (!condition) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/*
 	 * FORMATTERS
 	 */
@@ -635,14 +807,9 @@ public class FrostAPI
 	 *
 	 * @param date Target date
 	 * @return Formatted date
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public String format(Date date)
-	{
-		String pattern = "yyyy-MM-dd HH:mm:ss";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		return simpleDateFormat.format(date);
-	}
+	public String format(Date date) { return format("yyyy-MM-dd HH:mm:ss", date);                       }
 	
 	/**
 	 * A method used to format a date to a specific pattern
@@ -650,13 +817,9 @@ public class FrostAPI
 	 * @param pattern Desired pattern
 	 * @param date Target date
 	 * @return Formatted date
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public String format(String pattern, Date date)
-	{
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		return simpleDateFormat.format(date);
-	}
+	public String format(String pattern, Date date) { return new SimpleDateFormat(pattern).format(date);         }
 	
 	/**
 	 * A method used to format a method to include an array of parameters in the message
@@ -665,7 +828,7 @@ public class FrostAPI
 	 * @param input Target message
 	 * @param param Optional params
 	 * @return Formatted message
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public @NotNull String format(String input, Object... param) { return MessageFormat.format(input, param);    }
 	
@@ -676,7 +839,7 @@ public class FrostAPI
 	 * @param input Target message
 	 * @param param Optional params
 	 * @return Formatted message
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public @NotNull String format(boolean stripColor, String input, Object... param)
 	{
@@ -710,38 +873,39 @@ public class FrostAPI
 	 *
 	 * @param input Target input
 	 * @return Colorless output.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public @NotNull String stripColor(String input)
+	public String stripColor(String input)
 	{
-		input = input.replaceAll("§", "&");
-		
-		if (input.contains("&")) {
-			input = input.replace("&a", "");
-			input = input.replace("&b", "");
-			input = input.replace("&c", "");
-			input = input.replace("&d", "");
-			input = input.replace("&e", "");
-			input = input.replace("&f", "");
+		if (input != null) {
+			input = input.replaceAll("§", "&");
 			
-			input = input.replace("&0", "");
-			input = input.replace("&1", "");
-			input = input.replace("&2", "");
-			input = input.replace("&3", "");
-			input = input.replace("&4", "");
-			input = input.replace("&5", "");
-			input = input.replace("&6", "");
-			input = input.replace("&7", "");
-			input = input.replace("&8", "");
-			input = input.replace("&9", "");
-			
-			input = input.replace("&r", "");
+			if (input.contains("&")) {
+				input = input.replace("&a", "");
+				input = input.replace("&b", "");
+				input = input.replace("&c", "");
+				input = input.replace("&d", "");
+				input = input.replace("&e", "");
+				input = input.replace("&f", "");
+				
+				input = input.replace("&0", "");
+				input = input.replace("&1", "");
+				input = input.replace("&2", "");
+				input = input.replace("&3", "");
+				input = input.replace("&4", "");
+				input = input.replace("&5", "");
+				input = input.replace("&6", "");
+				input = input.replace("&7", "");
+				input = input.replace("&8", "");
+				input = input.replace("&9", "");
+				
+				input = input.replace("&r", "");
+			}
+			// REMOVE CONSOLE COLOR
+			input = ConsoleColor.remove(input);
+			return input;
 		}
-		
-		// REMOVE CONSOLE COLOR
-		input = ConsoleColor.remove(input);
-		
-		return input;
+		return null;
 	}
 	
 	/**
@@ -750,7 +914,7 @@ public class FrostAPI
 	 *
 	 * @param list Target list
 	 * @return Colorless list.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public @NotNull List<String> stripColor(@NotNull List<String> list)
 	{
