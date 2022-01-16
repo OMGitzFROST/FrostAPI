@@ -13,7 +13,7 @@ import java.nio.file.Path;
  * A class used to handle exception reporting and logs our caught exception to a file.
  *
  * @author OMGitzFROST
- * @since 1.0
+ * @since 1.0.0
  */
 public class Report
 {
@@ -27,7 +27,7 @@ public class Report
 	 * A constructor used to establish our file output for our report log.
 	 *
 	 * @param output Output file
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Report(File output)                    { this.output = output;           }
 
@@ -35,7 +35,7 @@ public class Report
 	 * A constructor used to establish our file output for our report log.
 	 *
 	 * @param path Output file path
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Report(String path)                    { this.output = api.toFile(path); }
 
@@ -43,7 +43,7 @@ public class Report
 	 * A constructor used to establish our file output for our report log.
 	 *
 	 * @param path Output file path
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Report(Path path)                      { this.output = api.toFile(path); }
 	
@@ -55,7 +55,7 @@ public class Report
 	 *
 	 * @param thrown Exception caught
 	 * @param silent Whether the stacktrace should print silently.
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @see #create(Throwable)
 	 */
@@ -103,7 +103,7 @@ public class Report
 	 * @see #create(Throwable, boolean)
 	 *
 	 * @param thrown Exception caught
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void create(@NotNull Throwable thrown) { create(thrown, false);          }
 }

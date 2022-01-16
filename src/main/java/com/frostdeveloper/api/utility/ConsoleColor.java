@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * A class used to create methods to get instance of console colors.
  *
  * @author OMGitzFROST
- * @since 1.0
+ * @since 1.0.0
  */
 public enum ConsoleColor {
 	
@@ -90,7 +90,7 @@ public enum ConsoleColor {
 	 * A constructor used to define the required parameters for our Color enums
 	 *
 	 * @param code Color code
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	ConsoleColor(String code)                                                { this.code = code;             }
 	
@@ -98,7 +98,7 @@ public enum ConsoleColor {
 	 * A method used to get the color code for a console color
 	 *
 	 * @return Console color value
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Override
 	public String toString()                                                 { return code;                  }

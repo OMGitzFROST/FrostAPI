@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A class used to house a variety of method that will validate objects throughout any project.
  *
+ * @author OMGitzFROST
+ * @since 1.0.0
  */
 public class Validate
 {
@@ -17,7 +19,7 @@ public class Validate
 	 *
 	 * @param conditions Tested conditions
 	 * @return True if all conditions are true.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static boolean allTrue(boolean @NotNull ... conditions)
 	{
@@ -34,7 +36,7 @@ public class Validate
 	 *
 	 * @param conditions Tested conditions
 	 * @return True if all conditions are false.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static boolean allFalse(boolean @NotNull ... conditions)
 	{
@@ -51,7 +53,7 @@ public class Validate
 	 *
 	 * @param conditions Tested conditions
 	 * @return True if any condition is true.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static boolean anyTrue(boolean @NotNull ... conditions)
 	{
@@ -68,7 +70,7 @@ public class Validate
 	 *
 	 * @param conditions Tested conditions
 	 * @return True if any condition is false.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static boolean anyFalse(boolean @NotNull ... conditions)
 	{
@@ -84,7 +86,7 @@ public class Validate
 	 * A method used to validate that an object is not null.
 	 *
 	 * @param object Targeted object
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void notNull(Object object) { notNull(object, null);}
 	
@@ -95,7 +97,7 @@ public class Validate
 	 *
 	 * @param object Targeted object
 	 * @param message The exception message
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void notNull(Object object, String message)
 	{
@@ -112,7 +114,7 @@ public class Validate
 	 *
 	 * @param object Targeted object
 	 * @param message The exception message
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void isTrue(Object object, String message)
 	{
@@ -128,7 +130,7 @@ public class Validate
 	 * @throws IllegalArgumentException Thrown if tbe object is not true.
 	 *
 	 * @param object Targeted object
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public static void isTrue(Object object)
 	{
