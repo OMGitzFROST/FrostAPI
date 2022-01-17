@@ -8,8 +8,8 @@
   <a href="https://github.com/OMGitzFROST/FrostAPI/blob/master/LICENSE">
     <img alt="GitHub License" src="https://img.shields.io/github/license/OMGitzFROST/FrostAPI?style=flat-square">
   </a>
-  <a href="https://github.com/OMGitzFROST/FrostAPI/releases/latest">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/OMGitzFROST/FrostAPI?style=flat-square">
+  <a href="https://search.maven.org/artifact/com.frostdeveloper.api/FrostAPI">
+    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.frostdeveloper.api/FrostAPI?style=flat-square&label=API Version">
   </a>
   <a href="https://github.com/sponsors/OMGitzFROST">
     <img src="https://img.shields.io/badge/$-donate-brown.svg?style=flat-square" alt="Donate Pill">
