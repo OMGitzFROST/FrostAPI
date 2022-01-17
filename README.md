@@ -6,13 +6,13 @@
 
 <p align="center">
   <a href="https://github.com/OMGitzFROST/FrostAPI/blob/master/LICENSE">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/OMGitzFROST/FrostAPI?style=flat-square">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/OMGitzFROST/FrostAPI?color=blue&style=flat-square&label=License">
   </a>
   <a href="https://search.maven.org/artifact/com.frostdeveloper.api/FrostAPI">
-    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.frostdeveloper.api/FrostAPI?style=flat-square&label=API Version">
+    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.frostdeveloper.api/FrostAPI?color=red&style=flat-square&label=API Version">
   </a>
   <a href="https://github.com/sponsors/OMGitzFROST">
-    <img src="https://img.shields.io/badge/$-donate-brown.svg?style=flat-square" alt="Donate Pill">
+    <img alt="GitHub Sponsors" src="https://img.shields.io/github/sponsors/OMGitzFROST?color=green&style=flat-square&label=Sponsors">
   </a>
 </p>
 
@@ -26,6 +26,18 @@ In order to use this api, please place this dependency block inside your pom.xml
   <artifactId>FrostAPI</artifactId>
   <version>1.0.0</version>
 </dependency>
+```
+
+Now you can get an instance of our api a few ways
+
+Provided by our API
+```java
+public final FrostAPI api = FrostAPI.getInstance();
+```
+
+Or you can create an object of this API yourself as such
+```java
+public final FrostAPI api = new FrostAPI();
 ```
 
 ## Contributing
@@ -45,6 +57,6 @@ page. If you can't make a donation, don't worry! There are lots of other ways to
 ---
 
 <h6 align="center">
-<img alt="GitHub followers" src="https://img.shields.io/github/followers/OMGitzFROST?style=social">
-<img alt="Twitter URL" src="https://img.shields.io/twitter/url?label=OMGitzFROST&style=social&url=https%3A%2F%2Ftwitter.com%2Fomgitzfrost">
+  <img alt="GitHub followers" src="https://img.shields.io/github/followers/OMGitzFROST?style=social">
+  <img alt="Twitter URL" src="https://img.shields.io/twitter/url?label=OMGitzFROST&style=social&url=https%3A%2F%2Ftwitter.com%2Fomgitzfrost">
 </h6>
