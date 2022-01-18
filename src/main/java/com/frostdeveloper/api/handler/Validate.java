@@ -40,6 +40,23 @@ public class Validate
 	}
 	
 	/**
+	 * A method used to validate that an object is not null. You can include optional parameters into the message
+	 *
+	 * @throws IllegalArgumentException Thrown if the object does not equal null
+	 *
+	 * @param object Targeted object
+	 * @param message The exception message
+	 * @param param Optional parameters
+	 * @since 1.0.0
+	 */
+	public static void notNull(Object object, String message, Object... param)
+	{
+		if (object == null) {
+			throw new IllegalArgumentException(api.format(message, param));
+		}
+	}
+	
+	/**
 	 * A method used to validate that an object is equal to true, if not this method will throw
 	 * an exception with the specified message.
 	 *
