@@ -74,3 +74,5 @@ fabric.properties
 .idea/libraries/
 *.iml
 target/
+/src/main/resources/
+/.idea/inspectionProfiles/

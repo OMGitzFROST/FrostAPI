@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * To order, remember to add a boolean value to the class constructor.
  *
  * @author OMGitzFROST
- * @since 1.0
+ * @since 1.0.0
  */
 public class Properties
 {
@@ -30,7 +30,7 @@ public class Properties
 	 * @implNote Properties may be added in a random order as this constructor
 	 * does not maintain its order inherently.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Properties()                      { prop = new java.util.Properties();  }
 	
@@ -40,7 +40,7 @@ public class Properties
 	 * @implNote If true, Properties are added in alphabetical order.
 	 *
 	 * @param ordered Determines whether the property list should be ordered alphabetically.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Properties(boolean ordered)
 	{
@@ -74,7 +74,7 @@ public class Properties
 	 *
 	 * @param targetFile Storing location.
 	 * @param comment A description of the property list.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void store(@NotNull File targetFile, String comment)
 	{
@@ -99,7 +99,7 @@ public class Properties
 	 * @throws NullPointerException if {@code out} is null.
 	 *
 	 * @param targetFile Storing location.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void store(@NotNull File targetFile)
 	{
@@ -121,7 +121,7 @@ public class Properties
 	 * @throws NullPointerException if {@code inStream} is null.
 	 *
 	 * @param targetFile File being read.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void load(@NotNull File targetFile)
 	{
@@ -142,7 +142,7 @@ public class Properties
 	 * @throws NullPointerException if {@code inStream} is null.
 	 *
 	 * @param inputStream The input stream
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void load(InputStream inputStream)
 	{
@@ -165,7 +165,7 @@ public class Properties
 	 *
 	 * @param key The target key.
 	 * @param value The desired value.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void setProperty(String key, Object value)
 	{
@@ -187,7 +187,7 @@ public class Properties
 	 * @param key The target key.
 	 * @param value The desired value.
 	 * @param replace Enable overwriting.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void setProperty(String key, Object value, boolean replace)
 	{
@@ -201,7 +201,7 @@ public class Properties
 	 * save changes by default.
 	 *
 	 * @param key Target key
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void removeProperty(String key)
 	{
@@ -222,7 +222,7 @@ public class Properties
 	 *
 	 * @param key The target key.
 	 * @return The value in the property list.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getProperty(String key)    { return prop.getProperty(key);       }
 	
@@ -239,7 +239,7 @@ public class Properties
 	 * @param key The target key.
 	 * @param defaultValue A default value.
 	 * @return The value in the property list.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public String getProperty(String key, Object defaultValue)
 	{
@@ -250,7 +250,7 @@ public class Properties
 	 * Returns {@code true} if this map contains no key-value mappings.
 	 *
 	 * @return {@code true} if this map contains no key-value mappings
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isEmpty()                 { return prop.isEmpty();              }
 	
@@ -258,7 +258,7 @@ public class Properties
 	 * A method used to return whether a properties are to be in alphabetical order.
 	 *
 	 * @return Whether in alphabetical order.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean isOrdered()               { return ordered;                     }
 	
@@ -270,7 +270,7 @@ public class Properties
 	 *         is a key in this table, as determined by the
 	 *         {@code equals} method; {@code false} otherwise
 	 * @throws NullPointerException if the specified key is null
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public boolean containsKey(Object key)   { return prop.containsKey(key);       }
 	
@@ -278,14 +278,14 @@ public class Properties
 	 * A method used to return a set of string property names for a property map.
 	 *
 	 * @return Set of string property names
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public Set<String> stringPropertyNames() { return prop.stringPropertyNames();  }
 	
 	/**
 	 * Removes all the mappings from this map.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public void clear()                      { prop.clear();                       }
 }
