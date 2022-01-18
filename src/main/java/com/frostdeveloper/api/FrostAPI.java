@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import sun.misc.IOUtils;
+import sun.util.resources.LocaleData;
 
 import java.io.*;
 import java.net.URL;
@@ -14,11 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -564,11 +569,7 @@ public class FrostAPI
 	 * @return A string representing the current date.
 	 * @since 1.0.0
 	 */
-	public String getTodayAsString(String pattern)
-	{
-		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
-		return formatter.format(getToday());
-	}
+	public String getTodayAsString(String pattern) { return dateFormat(pattern).format(getToday()); }
 	
 	/**
 	 * A method used in a runnable. It's used to return the amount of time required to complete the delay in seconds
@@ -613,39 +614,29 @@ public class FrostAPI
 	 * @return Requested duration
 	 * @since 1.0.0
 	 */
-	public int toTime(String input)
+	public int toTime(@NotNull String input)
 	{
-		input = input.toLowerCase();
-		String[] description = {"s","m","h","d","y","second","minute","hour","day","year","seconds","minutes","hours","days","years"};
-		String identifier = null;
-		int time = -1;
-		
-		for (String s : description) {
-			if (input.contains(s)) {
-				identifier = s;
-				time = toInteger(input.replace(" ", "").split(identifier)[0]);
+		try {
+			String time = toString(input.replaceAll("[^0-9]", ""));
+			String identifier = toString(input.replaceAll("[^a-zA-Z]", ""));
+			
+			switch (identifier.charAt(0)) {
+				case 's':
+				case 'S':
+					return toSecond(time);
+				case 'M':
+				case 'm':
+					return toMinute(time);
+				case 'H':
+				case 'h':
+					return toHour(time);
 			}
+			throw new IllegalArgumentException("Invalid time: " + input);
 		}
-		
-		switch (Objects.requireNonNull(identifier)){
-			case "s":
-			case "second":
-			case "seconds":
-				return toSecond(time);
-			case "m":
-			case "minute":
-			case "minutes":
-				return toMinute(time);
-			case "h":
-			case "hour":
-			case "hours":
-				return toHour(time);
-			case "d":
-			case "day":
-			case "days":
-				return toDay(time);
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return 0;
 		}
-		throw new IllegalArgumentException("Invalid time: " + input);
 	}
 	
 	/**
@@ -659,7 +650,33 @@ public class FrostAPI
 	 * @return A date object.
 	 * @since 1.1.0
 	 */
-	public Date toDate(String input) { return new Date(input); }
+	public Date toDate(String input)
+	{
+		try {
+			return dateFormat().parse(input);
+		}
+		catch (ParseException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * A method used to get an instance of our standard date formatter
+	 *
+	 * @return Standard date formatter
+	 * @since 1.2.0
+	 */
+	private @NotNull SimpleDateFormat dateFormat() { return dateFormat("yyy-MM-dd");                              }
+	
+	/**
+	 * A method used to get an instance of our standard date formatter
+	 *
+	 * @param pattern Desired pattern
+	 * @return Standard date formatter
+	 * @since 1.2.0
+	 */
+	private @NotNull SimpleDateFormat dateFormat(String pattern) { return new SimpleDateFormat(pattern);          }
 	
 	/*
 	 * BOOLEAN TESTERS
@@ -679,6 +696,38 @@ public class FrostAPI
 		Validate.notNull(target, "The target date cannot be null!");
 		Validate.notNull(comparedTo, "The compared to date cannot be null!");
 		return toDate(target).before(toDate(comparedTo));
+	}
+	
+	/**
+	 * A method used to test whether a date is before a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is before the compared date.
+	 * @since 1.2.0
+	 */
+	public boolean isBeforeDate(String target, Date comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return toDate(target).before(comparedTo);
+	}
+	
+	/**
+	 * A method used to test whether a date is before a different date.
+	 *
+	 * @apiNote If the date is equal to the compared one, this method will always return false.
+	 *
+	 * @param target The date being tested.
+	 * @param comparedTo The date you will compare the target to.
+	 * @return Whether the target date is before the compared date.
+	 * @since 1.2.0
+	 */
+	public boolean isBeforeDate(Date target, String comparedTo) {
+		Validate.notNull(target, "The target date cannot be null!");
+		Validate.notNull(comparedTo, "The compared to date cannot be null!");
+		return target.before(toDate(comparedTo));
 	}
 	
 	/**
@@ -729,6 +778,9 @@ public class FrostAPI
 		return target.after(comparedTo);
 	}
 	
+	/*
+	 * BOOLEAN CONDITIONS
+	 */
 	
 	/**
 	 * A method used to test the conditions and will return true if all conditions are true.
@@ -809,7 +861,7 @@ public class FrostAPI
 	 * @return Formatted date
 	 * @since 1.0.0
 	 */
-	public String format(Date date) { return format("yyyy-MM-dd HH:mm:ss", date);                       }
+	public String format(Date date) { return dateFormat().format(date);                                           }
 	
 	/**
 	 * A method used to format a date to a specific pattern
@@ -819,7 +871,7 @@ public class FrostAPI
 	 * @return Formatted date
 	 * @since 1.0.0
 	 */
-	public String format(String pattern, Date date) { return new SimpleDateFormat(pattern).format(date);         }
+	public String format(String pattern, Date date) { return new SimpleDateFormat(pattern).format(date);          }
 	
 	/**
 	 * A method used to format a method to include an array of parameters in the message
@@ -830,7 +882,7 @@ public class FrostAPI
 	 * @return Formatted message
 	 * @since 1.0.0
 	 */
-	public @NotNull String format(String input, Object... param) { return MessageFormat.format(input, param);    }
+	public @NotNull String format(String input, Object... param) { return MessageFormat.format(input, param);     }
 	
 	/**
 	 * A method used to format a string and translate Bukkit color codes
