@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.MessageFormat;
@@ -108,7 +109,7 @@ public class FrostAPI
 	public void saveResource(File location, String name, boolean replace)
 	{
 		Validate.notNull(location, "Please specify a location, can be a directory or file");
-		Validate.notNull(name, "Please specify a resource name, please make sure it exists.");
+		Validate.notNull(name, "The embedded resource ({0}) cannot be found! Does it exist?", name);
 		
 		if (isDirectory(location)) {
 			location = toFile(location + File.separator + name);
@@ -352,6 +353,24 @@ public class FrostAPI
 		}
 		return stringPath.substring(stringPath.lastIndexOf("."));
 	}
+	
+	/**
+	 * A method used to get the file name in a path.
+	 *
+	 * @param path Target path
+	 * @return File name within path
+	 * @since 1.2.1
+	 */
+	public String getFileName(String path) { return toString(Paths.get(path).getFileName()); }
+	
+	/**
+	 * A method used to get the file name in a path.
+	 *
+	 * @param path Target path
+	 * @return File name within path
+	 * @since 1.2.1
+	 */
+	public String getFileName(@NotNull Path path) { return toString(path.getFileName());     }
 	
 	/*
 	 * GET FILE ATTRIBUTES
