@@ -164,7 +164,17 @@ public class Properties
 	 * @param value The desired value.
 	 * @since 1.0.0
 	 */
-	public void setProperty(String key, Object value) { prop.setProperty(key, api.toString(value)); }
+	public void setProperty(String key, Object value) { prop.setProperty(key, api.toString(value));      }
+	
+	/**
+	 * Removes the key (and its corresponding value) from this
+	 * hashtable. This method does nothing if the key is not in the hashtable.
+	 *
+	 * @param   key   the key that needs to be removed
+	 * @throws  NullPointerException  if the key is <code>null</code>
+	 * @since 1.2.3
+	 */
+	public void remove(String key)                    { prop.remove(key);                                }
 	
 	/**
 	 * A method used to search for a specific property key inside our property list, If the
@@ -179,7 +189,7 @@ public class Properties
 	 * @return The value in the property list.
 	 * @since 1.0.0
 	 */
-	public String getProperty(String key)    { return prop.getProperty(key);       }
+	public String getProperty(String key)             { return prop.getProperty(key);                    }
 	
 	/**
 	 * A method used to search for a specific property key inside our property list, If the
@@ -207,7 +217,7 @@ public class Properties
 	 * @throws NullPointerException if the specified key is null
 	 * @since 1.0.0
 	 */
-	public boolean containsKey(Object key)   { return prop.containsKey(key);       }
+	public boolean containsKey(Object key)             { return prop.containsKey(key);                   }
 	
 	/**
 	 * A method used to return a set of string property names for a property map.
@@ -215,7 +225,7 @@ public class Properties
 	 * @return Set of string property names
 	 * @since 1.0.0
 	 */
-	public Set<String> stringPropertyNames() { return prop.stringPropertyNames();  }
+	public Set<String> stringPropertyNames()           { return prop.stringPropertyNames();              }
 	
 	/**
 	 * Returns {@code true} if this map contains no key-value mappings.
@@ -223,7 +233,7 @@ public class Properties
 	 * @return {@code true} if this map contains no key-value mappings
 	 * @since 1.0.0
 	 */
-	public boolean isEmpty()                 { return prop.isEmpty();              }
+	public boolean isEmpty()                           { return prop.isEmpty();                          }
 	
 	/**
 	 * A method used to return whether a properties are to be in alphabetical order.
@@ -231,14 +241,14 @@ public class Properties
 	 * @return Whether in alphabetical order.
 	 * @since 1.0.0
 	 */
-	public boolean isOrdered()               { return ordered;                     }
+	public boolean isOrdered()                         { return ordered;                                 }
 	
 	/**
 	 * Clears this hashtable so that it contains no keys.
 	 *
 	 * @since 1.0.0
 	 */
-	public void clear()                      { prop.clear();                       }
+	public void clear()                                { prop.clear();                                   }
 	
 	/**
 	 * Returns a {@link Set} view of the keys contained in this map.
@@ -255,7 +265,7 @@ public class Properties
 	 *
 	 * @since 1.3.0
 	 */
-	public Set<Object> keySet()              { return prop.keySet();               }
+	public Set<Object> keySet()                        { return prop.keySet();                           }
 	
 	/**
 	 * Returns an enumeration of the keys in this hashtable.
@@ -266,5 +276,5 @@ public class Properties
 	 * @see     Map
 	 * @since 1.3.0
 	 */
-	public Enumeration<Object> keys()        { return prop.keys();                 }
+	public Enumeration<Object> keys()                  { return prop.keys();                             }
 }
