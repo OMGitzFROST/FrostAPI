@@ -1,5 +1,6 @@
 package com.frostdeveloper.api.core;
 
+import com.frostdeveloper.api.FrostAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -20,7 +21,10 @@ import java.util.stream.Collectors;
  */
 public class Properties
 {
-	// CLASS OBJECTS
+	// CLASS INSTANCES
+	private final FrostAPI api = FrostAPI.getInstance();
+	
+	// CLASS SPECIFIC OBJECTS
 	private final java.util.Properties prop;
 	private boolean ordered;
 	
@@ -47,18 +51,16 @@ public class Properties
 		this.ordered = ordered;
 		
 		if (ordered) {
-			prop = new java.util.Properties() {
-				@Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+			this.prop = new java.util.Properties() {
+				@Override
+				public synchronized Set<Map.Entry<Object, Object>> entrySet() {
 					return Collections.synchronizedSet(
-							super.entrySet()
-									.stream()
-									.sorted(Comparator.comparing(e -> e.getKey().toString()))
-									.collect(Collectors.toCollection(LinkedHashSet::new)));
+							super.entrySet().stream().sorted(Comparator.comparing(e -> e.getKey().toString())).collect(Collectors.toCollection(LinkedHashSet::new)));
 				}
 			};
 		}
 		else {
-			prop = new java.util.Properties();
+			this.prop = new java.util.Properties();
 		}
 	}
 	
@@ -158,57 +160,11 @@ public class Properties
 	 * A method used to set a value to a property inside our property list if it
 	 * does not already exist.
 	 *
-	 * @apiNote By default, this method will not overwrite the key's current value.
-	 * To overwrite, use {@link #setProperty(String, Object, boolean)}
-	 *
-	 * @see #setProperty(String, Object, boolean)
-	 *
 	 * @param key The target key.
 	 * @param value The desired value.
 	 * @since 1.0.0
 	 */
-	public void setProperty(String key, Object value)
-	{
-		if (getProperty(key) == null && !getProperty(key).equals(value)) {
-			prop.setProperty(key, String.valueOf(value));
-		}
-	}
-	
-	/**
-	 * A method used to set a value to a property inside our property list if it
-	 * does not already exist. If, the key already exists, you need to specify
-	 * whether this method should override its current value.
-	 *
-	 * @apiNote If you choose to not overwrite its value, nothing will happen to the
-	 * key's current value.
-	 *
-	 * @see #setProperty(String, Object)
-	 *
-	 * @param key The target key.
-	 * @param value The desired value.
-	 * @param replace Enable overwriting.
-	 * @since 1.0.0
-	 */
-	public void setProperty(String key, Object value, boolean replace)
-	{
-		if (getProperty(key) == null || replace && !getProperty(key).equals(String.valueOf(value))) {
-			prop.setProperty(key, String.valueOf(value));
-		}
-	}
-	
-	/**
-	 * A method used to remove a property from a properties map. Keep in mind this property does not
-	 * save changes by default.
-	 *
-	 * @param key Target key
-	 * @since 1.0.0
-	 */
-	public void removeProperty(String key)
-	{
-		if (getProperty(key) != null) {
-			prop.remove(key);
-		}
-	}
+	public void setProperty(String key, Object value) { prop.setProperty(key, api.toString(value)); }
 	
 	/**
 	 * A method used to search for a specific property key inside our property list, If the
@@ -218,7 +174,6 @@ public class Properties
 	 * or load from an input stream using {@link #load(InputStream)}.
 	 *
 	 * @see #setProperty(String, Object)
-	 * @see #setProperty(String, Object, boolean)
 	 *
 	 * @param key The target key.
 	 * @return The value in the property list.
@@ -234,33 +189,13 @@ public class Properties
 	 * or load from an input stream using {@link #load(InputStream)}.
 	 *
 	 * @see #setProperty(String, Object)
-	 * @see #setProperty(String, Object, boolean)
 	 *
 	 * @param key The target key.
-	 * @param defaultValue A default value.
+	 * @param def A default value.
 	 * @return The value in the property list.
 	 * @since 1.0.0
 	 */
-	public String getProperty(String key, Object defaultValue)
-	{
-		return prop.getProperty(key, String.valueOf(defaultValue));
-	}
-	
-	/**
-	 * Returns {@code true} if this map contains no key-value mappings.
-	 *
-	 * @return {@code true} if this map contains no key-value mappings
-	 * @since 1.0.0
-	 */
-	public boolean isEmpty()                 { return prop.isEmpty();              }
-	
-	/**
-	 * A method used to return whether a properties are to be in alphabetical order.
-	 *
-	 * @return Whether in alphabetical order.
-	 * @since 1.0.0
-	 */
-	public boolean isOrdered()               { return ordered;                     }
+	public String getProperty(String key, Object def) { return prop.getProperty(key, api.toString(def)); }
 	
 	/**
 	 * Tests if the specified object is a key in this table.
@@ -283,9 +218,53 @@ public class Properties
 	public Set<String> stringPropertyNames() { return prop.stringPropertyNames();  }
 	
 	/**
-	 * Removes all the mappings from this map.
+	 * Returns {@code true} if this map contains no key-value mappings.
+	 *
+	 * @return {@code true} if this map contains no key-value mappings
+	 * @since 1.0.0
+	 */
+	public boolean isEmpty()                 { return prop.isEmpty();              }
+	
+	/**
+	 * A method used to return whether a properties are to be in alphabetical order.
+	 *
+	 * @return Whether in alphabetical order.
+	 * @since 1.0.0
+	 */
+	public boolean isOrdered()               { return ordered;                     }
+	
+	/**
+	 * Clears this hashtable so that it contains no keys.
 	 *
 	 * @since 1.0.0
 	 */
 	public void clear()                      { prop.clear();                       }
+	
+	/**
+	 * Returns a {@link Set} view of the keys contained in this map.
+	 * The set is backed by the map, so changes to the map are
+	 * reflected in the set, and vice-versa.  If the map is modified
+	 * while an iteration over the set is in progress (except through
+	 * the iterators own <tt>remove</tt> operation), the results of
+	 * the iteration are undefined.  The set supports element removal,
+	 * which removes the corresponding mapping from the map, via the
+	 * <tt>Iterator.remove</tt>, <tt>Set.remove</tt>,
+	 * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt>
+	 * operations.  It does not support the <tt>add</tt> or <tt>addAll</tt>
+	 * operations.
+	 *
+	 * @since 1.3.0
+	 */
+	public Set<Object> keySet()              { return prop.keySet();               }
+	
+	/**
+	 * Returns an enumeration of the keys in this hashtable.
+	 *
+	 * @return  an enumeration of the keys in this hashtable.
+	 * @see     Enumeration
+	 * @see     #keySet()
+	 * @see     Map
+	 * @since 1.3.0
+	 */
+	public Enumeration<Object> keys()        { return prop.keys();                 }
 }
